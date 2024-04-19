@@ -2,30 +2,33 @@ import java.util.*;
 
 public class PhoneBook {
     public static void main(String[] args) {
-        HashMap<String, Set<String>> phoneBook = new HashMap<>();
+        Map<String, Set<String>> phoneBook = new HashMap<>();
 
-        // Заполнение телефонной книги
-        phoneBook.put("Петров", new HashSet<>(Arrays.asList("34788764690")));
-        phoneBook.put("Иванов", new HashSet<>(Arrays.asList("89181653827", "36766567676")));
-        phoneBook.put("Сидоров", new HashSet<>(Arrays.asList("61239879046", "09898761232")));
+        Scanner scanner = new Scanner(System.in);
 
-        // Объединение существующих записей с повторяющимися именами
-        HashMap<String, Set<String>> mergedPhoneBook = new HashMap<>();
-        for (Map.Entry<String, Set<String>> entry : phoneBook.entrySet()) {
-            if (mergedPhoneBook.containsKey(entry.getKey())) {
-                mergedPhoneBook.get(entry.getKey()).addAll(entry.getValue());
-            } else {
-                mergedPhoneBook.put(entry.getKey(), entry.getValue());
+        while (true) {
+            System.out.println("Введите 1, чтобы добавить запись в телефонную книгу\nВведите 2, чтобы вывести все имена и номера телефонов\nВведите 3, чтобы завершить программу");
+            int choice = scanner.nextInt();
+
+            if (choice == 1) {
+                System.out.println("Введите имя:");
+                String name = scanner.next();
+                System.out.println("Введите номер телефона:");
+                String phoneNumber = scanner.next();
+
+                phoneBook.computeIfAbsent(name, k -> new HashSet<>()).add(phoneNumber);
+            } else if (choice == 2) {
+                phoneBook.entrySet().stream()
+                        .sorted((entry1, entry2) -> Integer.compare(entry2.getValue().size(), entry1.getValue().size()))
+                        .forEach(entry -> {
+                            System.out.println("Имя: " + entry.getKey());
+                            System.out.println("Номера телефонов: " + entry.getValue());
+                        });
+            } else if (choice == 3) {
+                break;
             }
         }
 
-        // Сортировка по убыванию числа телефонов
-        List<Map.Entry<String, Set<String>>> sortedEntries = new ArrayList<>(mergedPhoneBook.entrySet());
-        sortedEntries.sort((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()));
-
-        // Вывод результатов
-        for (Map.Entry<String, Set<String>> entry : sortedEntries) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
+        scanner.close();
     }
 }
